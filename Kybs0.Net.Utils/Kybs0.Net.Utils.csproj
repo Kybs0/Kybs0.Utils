@@ -1,10 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
+    <Authors>Kybs0</Authors>
+    <RepositoryUrl>https://github.com/Kybs0/Kybs0.Net.Utils.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Kybs0/Kybs0.Net.Utils</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>提供了 C# 开发的辅助功能。</Description>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32" Version="1.0.0" />
   </ItemGroup>
