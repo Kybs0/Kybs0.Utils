@@ -10,17 +10,15 @@ namespace Kybs0.Net.Utils
 {
     public static class UtilsCommonPath
     {
-        public static string GetLogPath()
+        public static string GetLogFolder()
         {
             string appdataPath = GetAppDataFolder();
-            string logFilePath = Path.Combine(appdataPath, "log.txt");
+            string logFilePath = Path.Combine(appdataPath, "Log");
 
-            if (!File.Exists(logFilePath))
+            if (!Directory.Exists(logFilePath))
             {
-                var aaa = File.Create(logFilePath);
-                aaa.Dispose();
+                Directory.CreateDirectory(logFilePath);
             }
-
             return logFilePath;
         }
 
