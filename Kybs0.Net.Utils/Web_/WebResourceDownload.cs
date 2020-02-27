@@ -1,14 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Kybs0.Net.Utils
 {
-    public class WebResourceDownloadHelper
+    public class WebResourceDownload
     {
-        public static bool Download(string resourceUri,out string downloadPath)
+        /// <summary>
+        /// 下载资源
+        /// </summary>
+        /// <param name="resourceUri"></param>
+        /// <param name="downloadPath">本地路径</param>
+        /// <returns></returns>
+        public virtual bool Download(string resourceUri, string downloadPath)
         {
-            downloadPath = string.Empty;
             if (string.IsNullOrWhiteSpace(resourceUri))
             {
                 return false;
@@ -20,8 +29,6 @@ namespace Kybs0.Net.Utils
                 WebResponse response = request.GetResponse();
                 using (Stream reader = response.GetResponseStream())
                 {
-                    var userDownloadFolder = UtilsCommonPath.GetAppDataFolder();
-                    downloadPath = Path.Combine(userDownloadFolder, $"{Guid.NewGuid()}{Path.GetExtension(resourceUri)}");        //图片路径命名 
                     using (FileStream writer = new FileStream(downloadPath, FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         byte[] buff = new byte[512];
