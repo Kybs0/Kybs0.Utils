@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,22 @@ namespace Kybs0.Net.Utils
         {
             var infos=new List<string>()
             {
-                $"记录时间:{DateTime.Now.ToLongTimeString()}",
+                $"记录时间:{DateTime.Now:yyyy-MM-dd hh:mm:ss}",
                 $"描述:{message}\r\n"
             };
             string logFilePath = GetLogInfoPath();
             File.AppendAllLines(logFilePath, infos);
         }
-
+        public static void LogError(string message)
+        {
+            var infos = new List<string>()
+            {
+                $"记录时间:{DateTime.Now.ToLongTimeString()}",
+                $"异常描述:{message}",
+            };
+            string logFilePath = GetLogErrorPath();
+            File.AppendAllLines(logFilePath, infos);
+        }
         public static void LogError(string message,Exception ex)
         {
             var infos = new List<string>()

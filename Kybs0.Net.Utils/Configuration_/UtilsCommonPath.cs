@@ -10,6 +10,12 @@ namespace Kybs0.Net.Utils
 {
     public static class UtilsCommonPath
     {
+        public static string GetDownloadFolder()
+        {
+            var downloadFolder = Path.Combine(GetAppDataFolder(), "Download");
+            downloadFolder = EnsureDirectory(downloadFolder);
+            return downloadFolder;
+        }
         public static string GetLogFolder()
         {
             string appdataPath = GetAppDataFolder();
@@ -27,8 +33,9 @@ namespace Kybs0.Net.Utils
         {
             if (string.IsNullOrEmpty(_appDataFolder))
             {
-                Process cur = Process.GetCurrentProcess();
-                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{cur.ProcessName}");
+                var friendlyName = AppDomain.CurrentDomain.FriendlyName;
+                friendlyName = friendlyName.Replace(".exe",string.Empty);
+                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{friendlyName}");
             }
 
             if (!Directory.Exists(_appDataFolder))
@@ -39,10 +46,19 @@ namespace Kybs0.Net.Utils
         }
 
 
-        public static string ExeRunFolder()
+        public static string GetExeRunFolder()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             return baseDirectory;
+        }
+
+        public static string EnsureDirectory(string folder)
+        {
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+            return folder;
         }
     }
 }

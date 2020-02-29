@@ -6,12 +6,17 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Windows.Input;
+using Newtonsoft.Json;
+using System.Web;
 
 namespace Kybs0.Net.Utils
 {
     public class WebRequestBase
     {
-        public virtual async Task<string> RequestDataAsync(string requestUrl)
+        #region Request
+
+        public virtual async Task<TReponse> RequestDataAsync<TReponse>(string requestUrl)
         {
             WebRequest translationWebRequest = WebRequest.Create(requestUrl);
 
@@ -23,23 +28,30 @@ namespace Kybs0.Net.Utils
                     Encoding.GetEncoding("utf-8")))
                 {
                     string result = reader.ReadToEnd();
-                    var decodeResult = Unicode2String(result);
-                    return decodeResult;
+                    var decodeResult = UnicodeHelper.Unicode2String(result);
+                    var dataResponse = JsonConvert.DeserializeObject<TReponse>(decodeResult);
+                    return dataResponse;
                 }
             }
         }
+
+        #endregion
+
+        #region Post
+
         /// <summary>
         /// Post using WebRequest
         /// </summary>
         /// <param name="requestUrl"></param>
-        /// <param name="jsonData"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        public virtual async Task<string> PostDataAsync(string requestUrl, string jsonData)
+        public virtual async Task<TReponse> PostDataAsync<TReponse>(string requestUrl, HttpRequest request)
         {
             WebRequest webRequest = WebRequest.Create(requestUrl);
             webRequest.Method = "post";
             webRequest.ContentType = "application/json;charset=utf-8";
 
+            var jsonData = JsonConvert.SerializeObject(request);
             byte[] postdatabyte = Encoding.UTF8.GetBytes(jsonData);
             webRequest.ContentLength = postdatabyte.Length;
             using (Stream postStream = webRequest.GetRequestStream())
@@ -55,8 +67,9 @@ namespace Kybs0.Net.Utils
                     Encoding.GetEncoding("utf-8")))
                 {
                     string result = reader.ReadToEnd();
-                    var decodeResult = Unicode2String(result);
-                    return decodeResult;
+                    var decodeResult = UnicodeHelper.Unicode2String(result);
+                    var dataResponse = JsonConvert.DeserializeObject<TReponse>(decodeResult);
+                    return dataResponse;
                 }
             }
         }
@@ -64,10 +77,10 @@ namespace Kybs0.Net.Utils
         /// Post using WebRequest
         /// </summary>
         /// <param name="requestUrl"></param>
-        /// <param name="jsonData"></param>
+        /// <param name="request"></param>
         /// <param name="userToken"></param>
         /// <returns></returns>
-        public virtual async Task<string> PostDataAsync(string requestUrl, string jsonData, string userToken, string app_id, string app_key)
+        public virtual async Task<TReponse> PostDataAsync<TReponse>(string requestUrl, HttpRequest request, string userToken, string app_id, string app_key)
         {
             WebRequest webRequest = WebRequest.Create(requestUrl);
             webRequest.Method = "post";
@@ -79,6 +92,7 @@ namespace Kybs0.Net.Utils
                 webRequest.Headers.Add("X-C-ApiKey", app_key);
             }
 
+            var jsonData = JsonConvert.SerializeObject(request);
             byte[] postdatabyte = Encoding.UTF8.GetBytes(jsonData);
             webRequest.ContentLength = postdatabyte.Length;
             using (Stream postStream = webRequest.GetRequestStream())
@@ -94,8 +108,9 @@ namespace Kybs0.Net.Utils
                     Encoding.GetEncoding("utf-8")))
                 {
                     string result = reader.ReadToEnd();
-                    var decodeResult = Unicode2String(result);
-                    return decodeResult;
+                    var decodeResult = UnicodeHelper.Unicode2String(result);
+                    var dataResponse = JsonConvert.DeserializeObject<TReponse>(decodeResult);
+                    return dataResponse;
                 }
             }
         }
@@ -104,10 +119,11 @@ namespace Kybs0.Net.Utils
         /// Post using HttpClient
         /// </summary>
         /// <param name="requestUrl"></param>
-        /// <param name="jsonData"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        public virtual async Task<string> PostDataUsingHttpAsync(string requestUrl, string jsonData, string userToken, string app_id, string app_key)
+        public virtual async Task<TReponse> PostDataUsingHttpAsync<TReponse>(string requestUrl, HttpRequest request, string userToken, string app_id, string app_key)
         {
+            var jsonData = JsonConvert.SerializeObject(request);
             HttpContent httpContent = new StringContent(jsonData);
             httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (!string.IsNullOrEmpty(userToken))
@@ -121,21 +137,13 @@ namespace Kybs0.Net.Utils
             HttpResponseMessage response = httpClient.PostAsync(requestUrl, httpContent).Result;
             if (response.IsSuccessStatusCode)
             {
-                Task<string> t = response.Content.ReadAsStringAsync();
-                return t.Result;
+                var result = await response.Content.ReadAsStringAsync();
+                var dataResponse = JsonConvert.DeserializeObject<TReponse>(result);
+                return dataResponse;
             }
-            return string.Empty;
+            return default(TReponse);
         }
 
-        /// <summary>
-        /// Unicode转字符串
-        /// </summary>
-        /// <param name="source">经过Unicode编码的字符串</param>
-        /// <returns>正常字符串</returns>
-        protected virtual string Unicode2String(string source)
-        {
-            return new Regex(@"\\u([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled).Replace(
-                source, x => string.Empty + Convert.ToChar(Convert.ToUInt16(x.Result("$1"), 16)));
-        }
+        #endregion
     }
 }
