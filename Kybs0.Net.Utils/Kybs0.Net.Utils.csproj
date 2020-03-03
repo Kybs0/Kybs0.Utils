@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.5</Version>
+    <Version>1.0.8</Version>
     <Authors>Kybs0</Authors>
     <RepositoryUrl>https://github.com/Kybs0/Kybs0.Net.Utils.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Kybs0/Kybs0.Net.Utils</PackageProjectUrl>
@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

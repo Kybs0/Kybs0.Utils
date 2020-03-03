@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -16,20 +17,35 @@ namespace Kybs0.Net.Utils
     {
         #region Request
 
-        public virtual async Task<TReponse> RequestDataAsync<TReponse>(string requestUrl)
+        public virtual async Task<TResponse> GetAsync<TResponse>(string url, HttpRequest request = null, Dictionary<string, string> headersDict = null)
         {
-            WebRequest translationWebRequest = WebRequest.Create(requestUrl);
-
-            var response = await translationWebRequest.GetResponseAsync();
-
-            using (Stream stream = response.GetResponseStream())
+            WebRequest webRequest = WebRequest.Create(url);
+            webRequest.Method = "get";
+            webRequest.ContentType = "application/json";
+            if (headersDict != null)
             {
-                using (StreamReader reader = new StreamReader(stream ?? throw new InvalidOperationException(),
+                foreach (var headerTuple in headersDict)
+                {
+                    webRequest.Headers.Add(headerTuple.Key, headerTuple.Value);
+                }
+            }
+            var jsonData = JsonConvert.SerializeObject(request);
+            byte[] databyte = Encoding.UTF8.GetBytes(jsonData);
+            webRequest.ContentLength = databyte.Length;
+            using (Stream requestStream = webRequest.GetRequestStream())
+            {
+                requestStream.Write(databyte, 0, databyte.Length);
+            }
+
+            var response = await webRequest.GetResponseAsync();
+            using (Stream responseStream = response.GetResponseStream())
+            {
+                using (StreamReader reader = new StreamReader(responseStream ?? throw new InvalidOperationException(),
                     Encoding.GetEncoding("utf-8")))
                 {
                     string result = reader.ReadToEnd();
                     var decodeResult = UnicodeHelper.Unicode2String(result);
-                    var dataResponse = JsonConvert.DeserializeObject<TReponse>(decodeResult);
+                    var dataResponse = JsonConvert.DeserializeObject<TResponse>(decodeResult);
                     return dataResponse;
                 }
             }
@@ -38,59 +54,19 @@ namespace Kybs0.Net.Utils
         #endregion
 
         #region Post
-
-        /// <summary>
-        /// Post using WebRequest
-        /// </summary>
-        /// <param name="requestUrl"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public virtual async Task<TReponse> PostDataAsync<TReponse>(string requestUrl, HttpRequest request)
+        public virtual async Task<TReponse> PostAsync<TReponse>(string url, HttpRequest request, Dictionary<string, string> headersDict = null)
         {
-            WebRequest webRequest = WebRequest.Create(requestUrl);
+            var requestAccess = $"http://edu.test.seewo.com/open/api/v1/limit/courseware/apply/access";
+            WebRequest webRequest = WebRequest.Create(requestAccess);
             webRequest.Method = "post";
             webRequest.ContentType = "application/json;charset=utf-8";
-
-            var jsonData = JsonConvert.SerializeObject(request);
-            byte[] postdatabyte = Encoding.UTF8.GetBytes(jsonData);
-            webRequest.ContentLength = postdatabyte.Length;
-            using (Stream postStream = webRequest.GetRequestStream())
+            if (headersDict != null)
             {
-                postStream.Write(postdatabyte, 0, postdatabyte.Length);
-            }
-
-            var response = await webRequest.GetResponseAsync();
-
-            using (Stream responseStream = response.GetResponseStream())
-            {
-                using (StreamReader reader = new StreamReader(responseStream ?? throw new InvalidOperationException(),
-                    Encoding.GetEncoding("utf-8")))
+                foreach (var headerTuple in headersDict)
                 {
-                    string result = reader.ReadToEnd();
-                    var decodeResult = UnicodeHelper.Unicode2String(result);
-                    var dataResponse = JsonConvert.DeserializeObject<TReponse>(decodeResult);
-                    return dataResponse;
+                    webRequest.Headers.Add(headerTuple.Key, headerTuple.Value);
                 }
             }
-        }
-        /// <summary>
-        /// Post using WebRequest
-        /// </summary>
-        /// <param name="requestUrl"></param>
-        /// <param name="request"></param>
-        /// <param name="userToken"></param>
-        /// <returns></returns>
-        public virtual async Task<TReponse> PostDataAsync<TReponse>(string requestUrl, HttpRequest request, string userToken, string app_id, string app_key)
-        {
-            WebRequest webRequest = WebRequest.Create(requestUrl);
-            webRequest.Method = "post";
-            webRequest.ContentType = "application/json";
-            if (!string.IsNullOrEmpty(userToken))
-            {
-                webRequest.Headers.Add("Token", userToken);
-                webRequest.Headers.Add("X‑C‑AppId", app_id);
-                webRequest.Headers.Add("X-C-ApiKey", app_key);
-            }
 
             var jsonData = JsonConvert.SerializeObject(request);
             byte[] postdatabyte = Encoding.UTF8.GetBytes(jsonData);
@@ -99,7 +75,6 @@ namespace Kybs0.Net.Utils
             {
                 postStream.Write(postdatabyte, 0, postdatabyte.Length);
             }
-
             var response = await webRequest.GetResponseAsync();
 
             using (Stream responseStream = response.GetResponseStream())
@@ -121,25 +96,30 @@ namespace Kybs0.Net.Utils
         /// <param name="requestUrl"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public virtual async Task<TReponse> PostDataUsingHttpAsync<TReponse>(string requestUrl, HttpRequest request, string userToken, string app_id, string app_key)
+        public virtual async Task<TReponse> PostByHttpAsync<TReponse, TRequest>(string requestUrl, HttpRequest request, Dictionary<string, string> headersDict = null)
         {
             var jsonData = JsonConvert.SerializeObject(request);
             HttpContent httpContent = new StringContent(jsonData);
             httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            if (!string.IsNullOrEmpty(userToken))
+            if (headersDict != null)
             {
-                httpContent.Headers.Add("Token", userToken);
-                httpContent.Headers.Add("X-C-AppId", app_id);
-                httpContent.Headers.Add("X-C-ApiKey", app_key);
+                foreach (var headerTuple in headersDict)
+                {
+                    httpContent.Headers.Add(headerTuple.Key, headerTuple.Value);
+                }
             }
 
-            HttpClient httpClient = new HttpClient();
-            HttpResponseMessage response = httpClient.PostAsync(requestUrl, httpContent).Result;
-            if (response.IsSuccessStatusCode)
+            using (HttpClient httpClient = new HttpClient())
             {
-                var result = await response.Content.ReadAsStringAsync();
-                var dataResponse = JsonConvert.DeserializeObject<TReponse>(result);
-                return dataResponse;
+                using (HttpResponseMessage response = httpClient.PostAsync(requestUrl, httpContent).Result)
+                {
+                    if (response.IsSuccessStatusCode && response.Content != null)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                        var dataResponse = JsonConvert.DeserializeObject<TReponse>(result);
+                        return dataResponse;
+                    }
+                }
             }
             return default(TReponse);
         }

@@ -33,9 +33,9 @@ namespace Kybs0.Net.Utils
         {
             if (string.IsNullOrEmpty(_appDataFolder))
             {
-                var friendlyName = AppDomain.CurrentDomain.FriendlyName;
-                friendlyName = friendlyName.Replace(".exe",string.Empty);
-                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{friendlyName}");
+                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var name = new DirectoryInfo(baseDirectory).Name;
+                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{name}");
             }
 
             if (!Directory.Exists(_appDataFolder))
