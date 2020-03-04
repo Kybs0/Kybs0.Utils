@@ -54,10 +54,7 @@ namespace Kybs0.Net.Utils
 
         public static string EnsureDirectory(string folder)
         {
-            if (!Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
+            FolderHelper.CreateFolder(folder);
             return folder;
         }
     }

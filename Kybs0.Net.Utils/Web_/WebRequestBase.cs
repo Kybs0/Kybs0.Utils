@@ -29,12 +29,16 @@ namespace Kybs0.Net.Utils
                     webRequest.Headers.Add(headerTuple.Key, headerTuple.Value);
                 }
             }
-            var jsonData = JsonConvert.SerializeObject(request);
-            byte[] databyte = Encoding.UTF8.GetBytes(jsonData);
-            webRequest.ContentLength = databyte.Length;
-            using (Stream requestStream = webRequest.GetRequestStream())
+
+            if (request!=null)
             {
-                requestStream.Write(databyte, 0, databyte.Length);
+                var jsonData = JsonConvert.SerializeObject(request);
+                byte[] databyte = Encoding.UTF8.GetBytes(jsonData);
+                webRequest.ContentLength = databyte.Length;
+                using (Stream requestStream = webRequest.GetRequestStream())
+                {
+                    requestStream.Write(databyte, 0, databyte.Length);
+                }
             }
 
             var response = await webRequest.GetResponseAsync();
@@ -56,8 +60,7 @@ namespace Kybs0.Net.Utils
         #region Post
         public virtual async Task<TReponse> PostAsync<TReponse>(string url, HttpRequest request, Dictionary<string, string> headersDict = null)
         {
-            var requestAccess = $"http://edu.test.seewo.com/open/api/v1/limit/courseware/apply/access";
-            WebRequest webRequest = WebRequest.Create(requestAccess);
+            WebRequest webRequest = WebRequest.Create(url);
             webRequest.Method = "post";
             webRequest.ContentType = "application/json;charset=utf-8";
             if (headersDict != null)
