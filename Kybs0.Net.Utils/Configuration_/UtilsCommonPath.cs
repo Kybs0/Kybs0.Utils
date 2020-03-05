@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Kybs0.Net.Utils
 {
@@ -33,9 +34,13 @@ namespace Kybs0.Net.Utils
         {
             if (string.IsNullOrEmpty(_appDataFolder))
             {
-                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                var name = new DirectoryInfo(baseDirectory).Name;
-                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{name}");
+                var canGetAppName=TryGetAppName(out var appName);
+                if (!canGetAppName)
+                {
+                    var baseDirectory = Directory.GetCurrentDirectory();
+                    appName = new DirectoryInfo(baseDirectory).Name;
+                }
+                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{appName}");
             }
 
             if (!Directory.Exists(_appDataFolder))
@@ -45,6 +50,38 @@ namespace Kybs0.Net.Utils
             return _appDataFolder;
         }
 
+        private static bool TryGetAppName(out string appName)
+        {
+            appName = string.Empty;
+            try
+            {
+                var baseDirectory = Directory.GetCurrentDirectory();
+                string startupUri = Application.Current.StartupUri.AbsolutePath;
+                appName = Path.GetFileNameWithoutExtension(startupUri);
+                if (string.IsNullOrEmpty(appName))
+                {
+                    var exeFile = Directory.GetFiles(baseDirectory, "*.exe").FirstOrDefault();
+                    if (!string.IsNullOrEmpty(exeFile))
+                    {
+                        appName = Path.GetFileNameWithoutExtension(exeFile);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+            return !string.IsNullOrEmpty(appName);
+        }
+
+        public static void SetAppDataFolder(string appName)
+        {
+            _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{appName}");
+            if (!Directory.Exists(_appDataFolder))
+            {
+                Directory.CreateDirectory(_appDataFolder);
+            }
+        }
 
         public static string GetExeRunFolder()
         {

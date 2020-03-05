@@ -12,44 +12,72 @@ namespace Kybs0.Net.Utils
     {
         public static void LogInfo(string message)
         {
-            var infos=new List<string>()
+            try
             {
-                $"记录时间:{DateTime.Now:yyyy-MM-dd hh:mm:ss}",
-                $"描述:{message}\r\n"
-            };
-            string logFilePath = GetLogInfoPath();
-            File.AppendAllLines(logFilePath, infos);
+                var infos=new List<string>()
+                {
+                    $"记录时间:{DateTime.Now:yyyy-MM-dd hh:mm:ss}",
+                    $"描述:{message}\r\n"
+                };
+                string logFilePath = GetLogInfoPath();
+                File.AppendAllLines(logFilePath, infos);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
         public static void LogError(string message)
         {
-            var infos = new List<string>()
+            try
             {
-                $"记录时间:{DateTime.Now.ToLongTimeString()}",
-                $"异常描述:{message}",
-            };
-            string logFilePath = GetLogErrorPath();
-            File.AppendAllLines(logFilePath, infos);
+                var infos = new List<string>()
+                {
+                    $"记录时间:{DateTime.Now.ToLongTimeString()}",
+                    $"异常描述:{message}",
+                };
+                string logFilePath = GetLogErrorPath();
+                File.AppendAllLines(logFilePath, infos);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
         public static void LogError(string message,Exception ex)
         {
-            var infos = new List<string>()
+            try
             {
-                $"记录时间:{DateTime.Now.ToLongTimeString()}",
-                $"异常描述:{message}",
-                $"异常详细:{ex.Message}\r\n{ex.StackTrace}\r\n",
-            };
-            string logFilePath = GetLogErrorPath();
-            File.AppendAllLines(logFilePath, infos);
+                var infos = new List<string>()
+                {
+                    $"记录时间:{DateTime.Now.ToLongTimeString()}",
+                    $"异常描述:{message}",
+                    $"异常详细:{ex.Message}\r\n{ex.StackTrace}\r\n",
+                };
+                string logFilePath = GetLogErrorPath();
+                File.AppendAllLines(logFilePath, infos);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
         public static void LogError(Exception ex)
         {
-            var infos = new List<string>()
+            try
             {
-                $"记录时间:{DateTime.Now.ToLongTimeString()}",
-                $"异常详细:{ex.Message}\r\n{ex.StackTrace}\r\n",
-            };
-            string logFilePath = GetLogErrorPath();
-            File.AppendAllLines(logFilePath, infos);
+                var infos = new List<string>()
+                {
+                    $"记录时间:{DateTime.Now.ToLongTimeString()}",
+                    $"异常详细:{ex.Message}\r\n{ex.StackTrace}\r\n",
+                };
+                string logFilePath = GetLogErrorPath();
+                File.AppendAllLines(logFilePath, infos);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
 
         private static string GetLogInfoPath()
@@ -65,10 +93,17 @@ namespace Kybs0.Net.Utils
             string logFolder = UtilsCommonPath.GetLogFolder();
             string logFilePath = Path.Combine(logFolder, fileName);
 
-            if (!File.Exists(logFilePath))
+            try
             {
-                var aaa = File.Create(logFilePath);
-                aaa.Dispose();
+                if (!File.Exists(logFilePath))
+                {
+                    var aaa = File.Create(logFilePath);
+                    aaa.Dispose();
+                }
+            }
+            catch (Exception e)
+            {
+                // ignored
             }
 
             return logFilePath;
