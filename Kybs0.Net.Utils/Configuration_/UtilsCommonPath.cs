@@ -40,7 +40,8 @@ namespace Kybs0.Net.Utils
                     var baseDirectory = Directory.GetCurrentDirectory();
                     appName = new DirectoryInfo(baseDirectory).Name;
                 }
-                _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{appName}");
+                var dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                _appDataFolder = Path.Combine(dataFolder,appName);
             }
 
             if (!Directory.Exists(_appDataFolder))
@@ -76,7 +77,8 @@ namespace Kybs0.Net.Utils
 
         public static void SetAppDataFolder(string appName)
         {
-            _appDataFolder = Path.Combine(@"C:\Users\" + Environment.UserName + $"\\AppData\\Roaming\\{appName}");
+            var dataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            _appDataFolder = Path.Combine(dataFolder, appName);
             if (!Directory.Exists(_appDataFolder))
             {
                 Directory.CreateDirectory(_appDataFolder);
