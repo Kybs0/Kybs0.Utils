@@ -2,13 +2,13 @@
   <PropertyGroup>
     <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.16</Version>
+    <Version>1.1.19</Version>
     <Authors>Kybs0</Authors>
     <UseWpf>True</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
     <RepositoryUrl>https://github.com/Kybs0/Kybs0.Net.Utils.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Kybs0/Kybs0.Net.Utils</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>http://chuantu.xyz/t6/723/1583677805x989559068.jpg</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
     <Description>提供了 C# 开发的辅助功能。</Description>
     <LangVersion>latest</LangVersion>

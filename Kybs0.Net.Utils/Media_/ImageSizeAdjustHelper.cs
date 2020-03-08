@@ -12,6 +12,8 @@ namespace Kybs0.Net.Utils
 {
     public class ImageSizeAdjustHelper
     {
+        #region 限制图片最大高宽显示
+
         /// <summary>
         /// 限制图片最大高宽显示
         /// </summary>
@@ -20,11 +22,15 @@ namespace Kybs0.Net.Utils
         /// <param name="maxHeight"></param>
         public static void AdjustImageByMaxSize(string imageFilePath, int maxWidth, int maxHeight)
         {
+            AdjustImageByMaxSize(imageFilePath, maxWidth, maxHeight, InterpolationMode.Default);
+        }
+        public static void AdjustImageByMaxSize(string imageFilePath, int maxWidth, int maxHeight, InterpolationMode interpolationMode)
+        {
             using (Bitmap newImage = new Bitmap(maxWidth, maxHeight, PixelFormat.Format24bppRgb))
             {
                 using (Graphics g = Graphics.FromImage((System.Drawing.Image)newImage))
                 {
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.InterpolationMode = interpolationMode;
                     using (Image image = Image.FromFile(imageFilePath))
                     {
                         var adjustedSize = GetAllowedMaxSize(image.Width, image.Height, maxWidth, maxHeight);
@@ -65,6 +71,11 @@ namespace Kybs0.Net.Utils
             return (adjustedWidth, adjustedHeight);
         }
 
+        #endregion
+
+
+        #region 固定图片高宽显示
+
         /// <summary>
         /// 固定图片高宽显示
         /// </summary>
@@ -73,12 +84,16 @@ namespace Kybs0.Net.Utils
         /// <param name="fixedHeight"></param>
         public static void AdjustImageByFixedSize(string imageFilePath, int fixedWidth, int fixedHeight)
         {
+            AdjustImageByFixedSize(imageFilePath, fixedWidth, fixedHeight, InterpolationMode.Default);
+        }
+        public static void AdjustImageByFixedSize(string imageFilePath, int fixedWidth, int fixedHeight, InterpolationMode interpolationMode)
+        {
             using (Bitmap newImage = new Bitmap(fixedWidth, fixedHeight, PixelFormat.Format24bppRgb))
             {
                 using (Graphics g = Graphics.FromImage((System.Drawing.Image)newImage))
                 {
                     g.Clear(Color.Black);
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.InterpolationMode = interpolationMode;
                     using (Image image = Image.FromFile(imageFilePath))
                     {
                         var adjustedSize = GetAllowedFixedSize(image.Width, image.Height, fixedWidth, fixedHeight);
@@ -108,8 +123,8 @@ namespace Kybs0.Net.Utils
             var fixedRatio = fixedHeight / Convert.ToDouble(fixedWidth);
             //超出显示时，压缩
             //高宽均小于固定尺寸时，扩大比例显示
-            if (adjustedWidth> fixedWidth || adjustedHeight> fixedHeight
-                ||(adjustedWidth < fixedWidth && adjustedHeight < fixedHeight))
+            if (adjustedWidth > fixedWidth || adjustedHeight > fixedHeight
+                || (adjustedWidth < fixedWidth && adjustedHeight < fixedHeight))
             {
                 //原图片宽度比例大时，扩大宽度
                 if (sourceRatio <= fixedRatio)
@@ -127,5 +142,8 @@ namespace Kybs0.Net.Utils
 
             return (adjustedWidth, adjustedHeight);
         }
+
+        #endregion
+
     }
 }

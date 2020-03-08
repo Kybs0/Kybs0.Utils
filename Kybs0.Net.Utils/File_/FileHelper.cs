@@ -15,13 +15,20 @@ namespace Kybs0.Net.Utils
             {
                 foreach (var x in Directory.EnumerateFiles(sourceFolder, "*.*", SearchOption.TopDirectoryOnly))
                 {
-                    var fileName = Path.GetFileName(x);
-                    var newFile = Path.Combine(destFolder, fileName ?? throw new InvalidOperationException());
-                    if (File.Exists(newFile))
+                    try
                     {
-                        File.Delete(newFile);
+                        var fileName = Path.GetFileName(x);
+                        var newFile = Path.Combine(destFolder, fileName ?? throw new InvalidOperationException());
+                        if (File.Exists(newFile))
+                        {
+                            File.Delete(newFile);
+                        }
+                        File.Move(x, newFile);
                     }
-                    File.Move(x, newFile);
+                    catch (Exception e)
+                    {
+                        // ignored
+                    }
                 }
             }
         }
@@ -29,14 +36,28 @@ namespace Kybs0.Net.Utils
         {
             foreach (var x in Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories))
             {
-                File.Delete(x);
+                try
+                {
+                    File.Delete(x);
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
             }
         }
         public static void RemoveFiles(string dir, string pattern)
         {
             foreach (var x in Directory.EnumerateFiles(dir, pattern, SearchOption.AllDirectories))
             {
-                File.Delete(x);
+                try
+                {
+                    File.Delete(x);
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
             }
         }
         public static string CopyTempFile(string file)
@@ -48,9 +69,16 @@ namespace Kybs0.Net.Utils
 
         public static void DeleteFile(string filePath)
         {
-            if (File.Exists(filePath))
+            try
             {
-                File.Delete(filePath);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+            }
+            catch (Exception e)
+            {
+                // ignored
             }
         }
     }
