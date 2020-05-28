@@ -6,15 +6,15 @@
     <Authors>Kybs0</Authors>
     <UseWpf>True</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
-    <RepositoryUrl>https://github.com/Kybs0/Kybs0.Net.Utils.git</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Kybs0/Kybs0.Net.Utils</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Kybs0/Kybs0.Utils.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Kybs0/Kybs0.Utils</PackageProjectUrl>
     <PackageIconUrl>http://chuantu.xyz/t6/723/1583677805x989559068.jpg</PackageIconUrl>
     <RepositoryType>git</RepositoryType>
     <Description>提供了 C# 开发的辅助功能。</Description>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Kybs0.Net.Utils.csproj.DotSettings" />
+    <None Remove="Kybs0.Utils.csproj.DotSettings" />
   </ItemGroup>
   <ItemGroup>
     <!--<PackageReference Include="Microsoft.Win32" Version="1.0.0" />-->
