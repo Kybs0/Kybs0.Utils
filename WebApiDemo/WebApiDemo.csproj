@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Kybs0.Net.Utils\Kybs0.Net.Utils.csproj" />
+    <ProjectReference Include="..\Kybs0.Utils\Kybs0.Utils.csproj" />
   </ItemGroup>
 
 
